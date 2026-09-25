@@ -1,6 +1,5 @@
 # Player Blocking
 <p1> Allows players to block/unblock other annoying players to stop seeing their messages </p>
-<br>
 
 ## Usage
 - `/block <player>`: Blocks the target player. The user will not see any messages from this target player.
