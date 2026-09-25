@@ -1,5 +1,5 @@
 # Player Blocking
-<img src = "screenshot2.png", alt = "Annoying spammmer getting blocked">
+<img src = "screenshot2.png" alt = "Annoying spammmer getting blocked">
 <p1> Allows players to block/unblock other annoying players to stop seeing their messages </p>
 
 ## Usage
