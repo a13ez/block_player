@@ -54,7 +54,7 @@ core.register_chatcommand("block", {
 
         blockedPlayers[name] = blockedPlayers[name] or {}
         blockedPlayers[name][param] = true
-        return true, "[Server]: " .. param .. " has been blocked."
+        return true, param .. " has been blocked."
     end
 })
 
