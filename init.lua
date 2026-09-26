@@ -1,4 +1,4 @@
-local blockedPlayers = {}
+xocal blockedPlayers = {}
 local wp = core.get_worldpath()
 
 -- Data will be saved in JSON format (generally easier to access this data)
@@ -50,7 +50,7 @@ core.register_chatcommand("block", {
     func = function(name, param)
         blockedPlayers[name] = blockedPlayers[name] or {}
         blockedPlayers[name][param] = true
-        core.chat_send_player(name, "[Server]: " .. param .. " has been blocked.")
+        return true, "[Server]: " .. param .. " has been blocked."
     end
 })
 
@@ -58,12 +58,16 @@ core.register_chatcommand("unblock", {
     description = "'Unblocks' a player | You will be able to see their messages again.",
     param = "<target>",
     func = function(name, param)
+        if name == param then
+            return false, "You cannot block yourself!"
+        end
+
         blockedPlayers[name] = blockedPlayers[name] or {}
         if blockedPlayers[name][param] then
             blockedPlayers[name][param] = nil
-            core.chat_send_player(name, "[Server]: " .. param .. " has been unblocked.")
+            return true, param .. " has been unblocked."
         else
-            core.chat_send_player(name, "[Server]: Invalid target: '" .. param .. "'.")
+            return false, "Invalid target: '" .. param .. "'."
         end
     end
 })
