@@ -48,6 +48,10 @@ core.register_chatcommand("block", {
     description = "'Blocks' a player | You dont see their messages.",
     param = "<target>",
     func = function(name, param)
+        if name == param then
+            return false, "You cannot block yourself!"
+        end
+
         blockedPlayers[name] = blockedPlayers[name] or {}
         blockedPlayers[name][param] = true
         return true, "[Server]: " .. param .. " has been blocked."
