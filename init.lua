@@ -1,4 +1,4 @@
-xocal blockedPlayers = {}
+local blockedPlayers = {}
 local wp = core.get_worldpath()
 
 -- Data will be saved in JSON format (generally easier to access this data)
