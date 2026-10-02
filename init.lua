@@ -21,25 +21,13 @@ loadBlockedPlayers()
 
 -- Handling how messages are sent
 core.register_on_chat_message(function(name, message)
-    local cache = {} -- Players to send message to
+    local newMsg = core.format_chat_message(name, message)
     for _, player in ipairs(core.get_connected_players()) do
         local pn = player:get_player_name()
-        cache[(#cache or 0) + 1] = pn
-
-        if blockedPlayers[pn] and blockedPlayers[pn][name] then
-            cache[#cache] = nil -- Player is blocked. Remove them from the list
+        if not blockedPlayers[pn] or not blockedPlayers[pn][name] then
+            core.chat_send_player(pn, newMsg)
         end
     end
-
-    if #cache == #core.get_connected_players() then
-        return
-    end
-
-    for i=1, #cache do
-        local newMsg = core.format_chat_message(name, message)
-        core.chat_send_player(cache[i], newMsg)
-    end
-
     return true
 end)
 
