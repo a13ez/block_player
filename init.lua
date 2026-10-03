@@ -6,16 +6,16 @@ local wp = core.get_worldpath()
 -- Data will be saved in JSON format (generally easier to access this data)
 local function saveBlockedPlayers()
     local json = core.write_json(blockedPlayers, true)
-    local file = io.open(wp .. "/blocked_players.json", "w")
+    local file = io.open(wp .. "/block_player.json", "w")
     file:write(json)
     file:close()
 end
 
 local function loadBlockedPlayers()
-    local file = io.open(wp .. "/blocked_players.json", "r")
+    local file = io.open(wp .. "/block_player.json", "r")
     if file then
-        local content = file:read("*a")
-        blockedPlayers = core.parse_json(content)
+        local content = core.parse_json(file:read("*a"))
+        blockedPlayers = (content and content ~= nil and type(content) == "table") or {}
     end
 end
 
@@ -23,8 +23,7 @@ loadBlockedPlayers()
 
 -- Handling how messages are sent
 core.register_on_chat_message(function(name, message)
-    if blockedPlayers[name] then
-        core.chat_send_player(name, "kaka sent")
+    if not blockedPlayers[name] or #blockedPlayers[name] <= 0 then
         return
     end
 
@@ -49,6 +48,7 @@ core.register_chatcommand("block", {
 
         blockedPlayers[param] = blockedPlayers[param] or {}
         blockedPlayers[param][name] = true
+        saveBlockedPlayers()
         return true, param .. " has been blocked."
     end
 })
@@ -64,6 +64,7 @@ core.register_chatcommand("unblock", {
         blockedPlayers[param] = blockedPlayers[param] or {}
         if blockedPlayers[param][name] then
             blockedPlayers[param][name] = nil
+            saveBlockedPlayers()
             return true, param .. " has been unblocked."
         else
             return false, "Invalid target: '" .. param .. "'."
@@ -82,7 +83,3 @@ core.override_chatcommand("msg", {
         return old_msg_func(name, param)
     end,
 })
-
-core.register_on_shutdown(function()
-    saveBlockedPlayers()
-end)
