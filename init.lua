@@ -1,3 +1,5 @@
+-- Data will be saved based on "How many players blocked this person"
+-- i.e. ["Aimless"] = {["player1"] = true, ["player2"] = true}
 local blockedPlayers = {}
 local wp = core.get_worldpath()
 
@@ -21,10 +23,15 @@ loadBlockedPlayers()
 
 -- Handling how messages are sent
 core.register_on_chat_message(function(name, message)
+    if blockedPlayers[name] then
+        core.chat_send_player(name, "kaka sent")
+        return
+    end
+
     local newMsg = core.format_chat_message(name, message)
     for _, player in ipairs(core.get_connected_players()) do
         local pn = player:get_player_name()
-        if not blockedPlayers[pn] or not blockedPlayers[pn][name] then
+        if not blockedPlayers[name][pn] then
             core.chat_send_player(pn, newMsg)
         end
     end
@@ -40,8 +47,8 @@ core.register_chatcommand("block", {
             return false, "You cannot block yourself!"
         end
 
-        blockedPlayers[name] = blockedPlayers[name] or {}
-        blockedPlayers[name][param] = true
+        blockedPlayers[param] = blockedPlayers[param] or {}
+        blockedPlayers[param][name] = true
         return true, param .. " has been blocked."
     end
 })
@@ -54,9 +61,9 @@ core.register_chatcommand("unblock", {
             return false, "You cannot block yourself!"
         end
 
-        blockedPlayers[name] = blockedPlayers[name] or {}
-        if blockedPlayers[name][param] then
-            blockedPlayers[name][param] = nil
+        blockedPlayers[param] = blockedPlayers[param] or {}
+        if blockedPlayers[param][name] then
+            blockedPlayers[param][name] = nil
             return true, param .. " has been unblocked."
         else
             return false, "Invalid target: '" .. param .. "'."
@@ -69,7 +76,7 @@ local old_msg_func = core.registered_chatcommands["msg"].func
 core.override_chatcommand("msg", {
     func = function(name, param)
         local sendto, message = param:match("^(%S+)%s(.+)$")
-        if blockedPlayers[sendto] and blockedPlayers[sendto][name] then
+        if blockedPlayers[name] and blockedPlayers[name][sendto] then
             return false, "Failed to send PM to " .. sendto
         end
         return old_msg_func(name, param)
