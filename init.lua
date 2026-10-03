@@ -15,7 +15,7 @@ local function loadBlockedPlayers()
     local file = io.open(wp .. "/block_player.json", "r")
     if file then
         local content = core.parse_json(file:read("*a"))
-        blockedPlayers = (content and content ~= nil and type(content) == "table") or {}
+        blockedPlayers =  (type(content) == "table") and content or {}
     end
 end
 
@@ -23,7 +23,7 @@ loadBlockedPlayers()
 
 -- Handling how messages are sent
 core.register_on_chat_message(function(name, message)
-    if not blockedPlayers[name] or #blockedPlayers[name] <= 0 then
+    if not blockedPlayers[name] then
         return
     end
 
